@@ -1,0 +1,15 @@
+[submodule "code/AttGAN-PyTorch"]
+	path = code/AttGAN-PyTorch
+	url = git@github.com:elvisyjlin/AttGAN-PyTorch.git
+[submodule "code/AGGAN"]
+	path = code/AGGAN
+	url = git@github.com:sarathknv/AGGAN.git
+[submodule "code/stargan-v2"]
+	path = code/stargan-v2
+	url = git@github.com:clovaai/stargan-v2.git
+[submodule "code/stargan"]
+	path = code/stargan
+	url = git@github.com:yunjey/stargan.git
+[submodule "code/HiSD"]
+	path = code/HiSD
+	url = git@github.com:imlixinyang/HiSD.git

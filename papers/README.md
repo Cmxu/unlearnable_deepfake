@@ -40,12 +40,9 @@
  - [Adversarial Examples Are Not Bugs, They Are Features](https://proceedings.neurips.cc/paper/2019/hash/e2c420d928d4bf8ce0ff2ec19b371514-Abstract.html) - 
  First, a distinction is made between non-robust and robust features, where robust features are those that are salient to the human eye and non-robust features are those that may only appear to a ANNs eyes. Robust features are defined as features that have a correlation with a class which remains with added noise whereas non-robust features have a correlation with a class which is sensitive to noise. The critical finding is that models can train on non-robust datasets (as in datasets that have been adversarially attacked) and still reach high accuracy on the real dataset. This would suggest that vulnerability to adversarial attacks does not necessarily come from the model, but from underlying, invisible, and undetectable patterns in the dataset which the model learns. They also find that creating a robustified version of the dataset where all features are both salient and have correlation with a class yields robust accuracy which provides further evidence that vulnerability is a property of the dataset. The researchers support their hypothesis with rigorous, mathematical proofs.
  
- #### Not done yet
- 
+
 
  
-https://arxiv.org/abs/2105.10872
-https://arxiv.org/pdf/2204.12347.pdf
 
 
 
