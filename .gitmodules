@@ -1,15 +1,21 @@
-[submodule "code/AttGAN-PyTorch"]
-	path = code/AttGAN-PyTorch
+[submodule "code/deepfakers/AttGAN-PyTorch"]
+	path = code/deepfakers/AttGAN-PyTorch
 	url = git@github.com:elvisyjlin/AttGAN-PyTorch.git
-[submodule "code/AGGAN"]
-	path = code/AGGAN
+[submodule "code/deepfakers/AGGAN"]
+	path = code/deepfakers/AGGAN
 	url = git@github.com:sarathknv/AGGAN.git
-[submodule "code/stargan-v2"]
-	path = code/stargan-v2
+[submodule "code/deepfakers/stargan-v2"]
+	path = code/deepfakers/stargan-v2
 	url = git@github.com:clovaai/stargan-v2.git
-[submodule "code/stargan"]
-	path = code/stargan
+[submodule "code/deepfakers/stargan"]
+	path = code/deepfakers/stargan
 	url = git@github.com:yunjey/stargan.git
-[submodule "code/HiSD"]
-	path = code/HiSD
+[submodule "code/deepfakers/HiSD"]
+	path = code/deepfakers/HiSD
 	url = git@github.com:imlixinyang/HiSD.git
+[submodule "code/disrupters/LaSGSA"]
+	path = code/disrupters/LaSGSA
+	url = git@github.com:jimmy-academia/LaSGSA.git
+[submodule "code/disrupters/Adversarial-Attack-CycleGAN-and-pix2pix"]
+	path = code/disrupters/Adversarial-Attack-CycleGAN-and-pix2pix
+	url = git@github.com:jimmy-academia/Adversarial-Attack-CycleGAN-and-pix2pix.git
