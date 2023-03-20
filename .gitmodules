@@ -19,3 +19,6 @@
 [submodule "code/disrupters/Adversarial-Attack-CycleGAN-and-pix2pix"]
 	path = code/disrupters/Adversarial-Attack-CycleGAN-and-pix2pix
 	url = git@github.com:jimmy-academia/Adversarial-Attack-CycleGAN-and-pix2pix.git
+[submodule "code/deepfakers/CycleGAN"]
+	path = code/deepfakers/CycleGAN
+	url = git@github.com:junyanz/CycleGAN.git
