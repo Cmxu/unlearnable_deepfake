@@ -1,2 +1,11 @@
 .ipynb_checkpoints
 __pycache__
+data
+*.ckpt
+*.pt
+*.png
+*.jpg
+logs
+*.DS_Store
+*.pth
+models
