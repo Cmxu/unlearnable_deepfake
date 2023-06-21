@@ -4,6 +4,7 @@ from dataset import get_dataloaders
 from tqdm import tqdm
 from torchvision.models import resnet34
 from math import sqrt
+import torchvision.transforms as T
 def init_weights(m):
     
     if type(m) == nn.Linear:
@@ -14,7 +15,9 @@ def init_weights(m):
         
 
 prev_acc = 0
-train_loader, test_loader, val_loader = get_dataloaders(filename="/share/datasets/celeba", batch_size = 64, selected_attr = [31])
+train_loader, test_loader, val_loader = get_dataloaders(filename="/share/datasets/celeba", batch_size = 64, transforms= T.Compose([T.ToTensor(),
+                            T.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5)),
+                            T.Resize((256, 256))]), selected_attr = [31], )
 device = torch.device("cuda:2")
 model = resnet34().to(device)
 model.fc = nn.Sequential(nn.Linear(512, 256), nn.ReLU(), nn.Linear(256, 1)).to(device)
@@ -48,7 +51,7 @@ for ep in range(15):
         Y_hat = model(X)        
         loss = criterion(Y_hat, Y)
         preds = torch.where(Y_hat<0.5, 0, 1)
-        
+         
         tot_correct += torch.sum(preds==Y)
         tot_loss += float(loss)
         tot_samp += len(X)
