@@ -81,14 +81,14 @@ class Generator(nn.Module):
     
 
 
-def get_aggan_data():
+def get_aggan_data(landmarks = False):
     
-    transforms_ = T.Compose([ T.RandomHorizontalFlip(),
+    transforms_ = T.Compose([ T.RandomHorizontalFlip(), T.Resize((256, 256)),
                 T.ToTensor(),
-                T.Resize((256, 256)),
+                
                 # transforms.Lambda(lambda img: img[:, 1:-1, 1:-1]),
                 T.Normalize([0.5,0.5,0.5], [0.5,0.5,0.5]) ])
-    dataloader = DataLoader(CelebA_d2d(filename = "/share/datasets/celeba", transforms=transforms_, attr_ind=31), batch_size=16, shuffle=True, num_workers=3)
+    dataloader = DataLoader(CelebA_d2d(filename = "/share/datasets/celeba", transforms=transforms_, attr_ind=31, landmarks = landmarks), batch_size=1, shuffle=True, num_workers=3)
     return dataloader
 class AGGAN(nn.Module):
     def __init__(self):

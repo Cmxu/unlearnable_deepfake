@@ -130,18 +130,20 @@ class CelebA_HiSD(Dataset):
 
 
 class CelebA_d2d(Dataset):
-    def __init__(self, filename = "../data/celeba", split = "train", transforms = T.ToTensor(), attr_ind = 0):
+    def __init__(self, filename = "../data/celeba", split = "train", transforms = T.ToTensor(), attr_ind = 0, landmarks = False):
         super().__init__()
     
         self.features = [[], []]
         self.labels = [[], []]
+        self.landmarks = landmarks
         
         # Open file and get basic characteristics
         annotations_filename = os.path.join(filename, "list_attr_celeba.txt")
         annotations = open(annotations_filename, "r").read().splitlines()
         self.size = int(annotations[0])
         self.transform = transforms
-
+        if self.landmarks: land_anno = open(os.path.join(filename, "list_landmarks_align_celeba.txt"), "r").read().splitlines()
+        self.land_labels = [[],[]]
         if split == "train": img_range = range(1, int((self.size+1)*0.7)+1)
         elif split == "test": img_range = range(int((self.size+1)*0.7)+1, int((self.size+1)*0.9)+1)
         elif split == "val": img_range = range(int((self.size+1)*0.9)+1, self.size+1)
@@ -161,11 +163,18 @@ class CelebA_d2d(Dataset):
             # It is extremely slow to just add the image here, better to let dataloader parallelize          
             img = os.path.join(filename, f"images/{filename_img}")
             self.features[(label[attr_ind]+1)//2].append(img)
+            if self.landmarks:
+                
+                land_line_annos = [int(i) for i in [f for f in land_anno[i+1].split(" ") if f!=""][-4:]]
+                
+                self.land_labels[(label[attr_ind]+1)//2].append(land_line_annos)
+        
 
     def __getitem__(self, index):
         item_A = self.transform(Image.open(self.features[0][index]))       
-        item_B = self.transform(Image.open(self.features[1][random.randint(0, index)]))
-        return {'A': item_A, 'B': item_B}
+        item_B = self.transform(Image.open(self.features[1][(randind:=random.randint(0, index))]))
+        if not self.landmarks: return {'A': item_A, 'B': item_B}
+        else: return {'A': (item_A, self.land_labels[0][index]), 'B': (item_B, self.land_labels[1][randind])}
 
     def __len__(self):
         return min(len(self.labels[0]), len(self.labels[1]))

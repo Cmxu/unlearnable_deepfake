@@ -74,9 +74,11 @@ for epoch in range(3):
 
     vutils.save_image(X_a*0.5+0.5, "images/smile.png")
     vutils.save_image(X*0.5 + 0.5, "images/notsmile.png")
-    tr = Normalize(0.5, 0.5, 0.5)
+    tr = Normalize([0.5, 0.5, 0.5], [0.5,0.5,0.5])
+    print(attack_pos)
     vutils.save_image(tr(attack_pos)*0.5+0.5, "images/attackpos.png")
     vutils.save_image(tr(attack_neg)*0.5+0.5, "images/attackneg.png")
-
+    print(attack_pos)
+print(attack_neg, attack_pos, attack_neg.abs().max(), attack_pos.abs().max())
 torch.save(attack_neg, "attackneg.pt")
 torch.save(attack_pos, "attackpos.pt")
