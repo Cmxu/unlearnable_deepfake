@@ -26,13 +26,13 @@ class CelebA(Dataset):
         if self.landmarks: land_anno = open(os.path.join(filename, "list_landmarks_align_celeba.txt"), "r").read().splitlines()
         self.size = int(annotations[0])
         self.transform = transforms
-        self.land_labels = []
+        
         if split == "train": img_range = range(1, int((self.size+1)*0.7)+1)
         elif split == "test": img_range = range(int((self.size+1)*0.7)+1, int((self.size+1)*0.9)+1)
         elif split == "val": img_range = range(int((self.size+1)*0.9)+1, self.size+1)
         else: raise NotImplementedError(
-                f"Only options for dataset are \"train\", \"test\", \"val\". You entered \"{split}\".")       
-
+              f"Only options for dataset are \"train\", \"test\", \"val\". You entered \"{split}\".")       
+        self.land_labels = []
         # Start building real characteristics
         for i in img_range:
             words_in_line = annotations[i+1].split(" ")
@@ -50,7 +50,7 @@ class CelebA(Dataset):
             # If you want landmarks, here they are
             if self.landmarks:
                 
-                land_line_annos = [int(i) for i in [f for f in land_anno[i+1].split(" ") if f!=""][-4:]]
+                land_line_annos = [int(i) for i in [f for f in land_anno[i+1].split(" ") if f!=""][1:]]
                 
                 self.land_labels.append(land_line_annos)
         
@@ -89,7 +89,7 @@ def get_dataloaders(filename = "../data/celebahq", batch_size = 100, num_workers
 class CelebA_HiSD(Dataset):
     """Dataset class for the CelebA dataset."""
 
-    def __init__(self, filename, transform, attr, active, conditions, start=3000, end = 30000):
+    def __init__(self, filename, transform, attr, active, conditions, start=3000, end = 30000, landmarks = False):
         """Initialize and preprocess the CelebA dataset."""
         
         self.transform = transform
@@ -97,6 +97,10 @@ class CelebA_HiSD(Dataset):
         self.features = []
         self.labels = []
         self.attr = attr; self.active = active
+        self.landmarks = landmarks
+        if self.landmarks: land_anno = open(os.path.join(filename, "list_landmarks_align_celeba.txt"), "r").read().splitlines()
+        self.land_labels = []
+        
         # Open file and get basic characteristics
         annotations_filename = os.path.join(filename, "list_attr_celeba.txt")
         annotations = open(annotations_filename, "r").read().splitlines()
@@ -115,13 +119,18 @@ class CelebA_HiSD(Dataset):
                 # It is extremely slow to just add the image here, better to let dataloader parallelize          
                 img = os.path.join(filename, f"images/{filename_img}")
                 self.features.append(img)
+                if self.landmarks:
+                
+                    land_line_annos = [int(i) for i in [f for f in land_anno[i+1].split(" ") if f!=""][1:]]
+                    
+                    self.land_labels.append(land_line_annos)
 
     def __getitem__(self, index):
         """Return one image and its corresponding attribute label."""
         
         image = Image.open(self.features[index])
 
-        return self.transform(image), torch.Tensor(self.labels[index])
+        return self.transform(image), torch.Tensor(self.labels[index]), self.land_labels[index]
 
     def __len__(self):
         """Return the number of images."""
@@ -165,7 +174,7 @@ class CelebA_d2d(Dataset):
             self.features[(label[attr_ind]+1)//2].append(img)
             if self.landmarks:
                 
-                land_line_annos = [int(i) for i in [f for f in land_anno[i+1].split(" ") if f!=""][-4:]]
+                land_line_annos = [int(i) for i in [f for f in land_anno[i+1].split(" ") if f!=""][1:]]
                 
                 self.land_labels[(label[attr_ind]+1)//2].append(land_line_annos)
         

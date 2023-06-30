@@ -400,7 +400,7 @@ class Generator(nn.Module):
             return self.encode(x)
         if mode == 'dec':
             assert a is not None, 'No given attribute.'
-            return self.decode(x, a)
+            return self.decode(x, a) 
         raise Exception('Unrecognized mode: ' + mode)
 
 class Discriminators(nn.Module):
@@ -610,7 +610,7 @@ def get_attgan_data():
             T.ToTensor(),
             T.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
         ])
-    train_loader, _, _ = get_dataloaders(filename="/share/datasets/celeba", transforms=transform, selected_attr = [4, 5, 8, 9, 11, 12, 15, 20, 21, 22, 24, 26, 39])
+    train_loader, _, _ = get_dataloaders(filename="/share/datasets/celeba", transforms=transform, selected_attr = [4, 5, 8, 9, 11, 12, 15, 20, 21, 22, 24, 26, 39], landmarks=True)
     
     return train_loader
 class AttGAN(nn.Module):

@@ -13,11 +13,34 @@ def init_weights(m):
         m.weight.normal_(0, 0.01)
     
         
-
+selected_attr = [15] 
+# 31 is smile, 15 is eyeglasses
 prev_acc = 0
-train_loader, test_loader, val_loader = get_dataloaders(filename="/share/datasets/celeba", batch_size = 64, transforms= T.Compose([T.ToTensor(),
+
+
+'''
+transforms= T.Compose([T.ToTensor(),
                             T.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5)),
-                            T.Resize((256, 256))]), selected_attr = [31], )
+                            T.Resize((256, 256))]) - aggan transforms
+
+
+
+'''
+''' transform_list = [T.ToTensor(), T.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
+transform_list = [T.RandomCrop((128, 128))] + transform_list
+transform_list = [T.Resize(128)] + transform_list
+transform_list = [T.RandomHorizontalFlip()] + transform_list 
+transform_list = [T.ColorJitter(0.1, 0.1, 0.1, 0.1)] + transform_list 
+transforms = T.Compose(transform_list) # HiSD transforms
+'''
+transforms = T.Compose([
+            T.CenterCrop(170),
+            T.Resize(128),
+            T.ToTensor(),
+            T.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+        ]) # attgan
+
+train_loader, test_loader, val_loader = get_dataloaders(filename="/share/datasets/celeba", batch_size = 64, transforms= transforms, selected_attr = selected_attr, )
 device = torch.device("cuda:2")
 model = resnet34().to(device)
 model.fc = nn.Sequential(nn.Linear(512, 256), nn.ReLU(), nn.Linear(256, 1)).to(device)
@@ -60,5 +83,5 @@ for ep in range(15):
     
     
 
-torch.save(model.state_dict(), "smile.pt")
+torch.save(model.state_dict(), "eyeglassesattgan.pt")
 

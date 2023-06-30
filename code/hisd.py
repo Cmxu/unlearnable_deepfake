@@ -672,8 +672,8 @@ def hisd():
     return trainer.models.gen
 
 
-def get_hisd_data():
-    gen = hisd()
+def get_hisd_data(landmarks = False):
+    
     transform_list = [T.ToTensor(),
                         T.Normalize((0.5, 0.5, 0.5),
                                             (0.5, 0.5, 0.5))]
@@ -685,33 +685,32 @@ def get_hisd_data():
 
     attr = [5,31,15]
     loaders = [[DataLoader(
-                dataset=CelebA_HiSD("/share/datasets/celebahq", transform, attr[i], j, conditions = [20, 39]),
+                dataset=CelebA_HiSD("/share/datasets/celeba", transform, attr[i], j, conditions = [20, 39], landmarks = landmarks),
                 batch_size=1, shuffle=True, num_workers=1, pin_memory=True)
                                     for j in range(2)] for i in range(3)]
-    return gen, loaders
+    return loaders
 
-class HiSD(nn.Module):
-    def __init__(self):
+class HISD(nn.Module):
+    def __init__(self, device = torch.device("cuda:2")):
         super().__init__()
         config = get_config("deepfakers/HiSD/outputs/celeba-hq/config.yaml")
-        noise_dim = config['noise_dim']
         trainer = HiSD_Trainer(config)
         state_dict = torch.load("../models/gen_00200000.pt")
         trainer.models.gen.load_state_dict(state_dict['gen_test'])
-        trainer.models.gen.cuda()
-        self.gen = trainer.models.gen
-    
+        self.gen = trainer.models.gen.to(device)
+        self.device = device
+        
     def forward(self, img, tags, i, j, j_trg):
         x = img
         y = tags
         
-        x = x.cuda()
+        
         batch = x.size(0)
         
                 # non-translation path
         e = self.gen.encode(x)
         
-        s_trg = self.gen.map(torch.randn(batch, 32).cuda(), i, j_trg)
+        s_trg = self.gen.map(torch.randn(batch, 32).to(self.device), i, j_trg)
         e_trg = self.gen.translate(e, s_trg, i)
         x_trg = self.gen.decode(e_trg)
         return x_trg
