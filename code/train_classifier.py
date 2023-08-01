@@ -5,14 +5,17 @@ from tqdm import tqdm
 from torchvision.models import resnet34
 from math import sqrt
 import torchvision.transforms as T
+import argparse
 def init_weights(m):
     
     if type(m) == nn.Linear:
         m.weight.normal_(0, 0.01)
     if type(m) == nn.Conv2d:
         m.weight.normal_(0, 0.01)
-    
-        
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--attr", type = int, default = 31, help="attribute to be classified")
+args = parser.parse_args()
 selected_attr = [15] 
 # 31 is smile, 15 is eyeglasses
 prev_acc = 0

@@ -686,12 +686,12 @@ def get_hisd_data(landmarks = False):
     attr = [5,31,15]
     loaders = [[DataLoader(
                 dataset=CelebA_HiSD("/share/datasets/celeba", transform, attr[i], j, conditions = [20, 39], landmarks = landmarks),
-                batch_size=1, shuffle=True, num_workers=1, pin_memory=True)
+                batch_size=20, shuffle=True, num_workers=1, pin_memory=True)
                                     for j in range(2)] for i in range(3)]
     return loaders
 
 class HISD(nn.Module):
-    def __init__(self, device = torch.device("cuda:2")):
+    def __init__(self, device = torch.device("cuda:3")):
         super().__init__()
         config = get_config("deepfakers/HiSD/outputs/celeba-hq/config.yaml")
         trainer = HiSD_Trainer(config)

@@ -64,6 +64,71 @@ class CelebA(Dataset):
 
     def __len__(self):
         return len(self.labels)
+class CelebASeg(Dataset):
+    def __init__(self, filename = "/share/datasets/CelebAMask-HQ", split = "train", transforms = T.ToTensor(), seg_transforms = T.ToTensor(), selected_attr = list(range(40)), seg_attr = list(range(17)), landmarks = False):
+        super().__init__()
+    
+        self.features = []
+        self.labels = []
+        self.seg_transforms = seg_transforms
+        # Open file and get basic characteristics
+        annotations_filename = os.path.join(filename, "CelebAMask-HQ-attribute-anno.txt")
+        annotations = open(annotations_filename, "r").read().splitlines()
+        
+        self.size = int(annotations[0])
+        self.transform = transforms
+        self.segments = []
+        if split == "train": img_range = range(1, int((self.size+1)*0.7)+1)
+        elif split == "test": img_range = range(int((self.size+1)*0.7)+1, int((self.size+1)*0.9)+1)
+        elif split == "val": img_range = range(int((self.size+1)*0.9)+1, self.size+1)
+        else: raise NotImplementedError(
+              f"Only options for dataset are \"train\", \"test\", \"val\". You entered \"{split}\".")       
+        parts = ["cloth", "ear_r", "eye_g", "hair", "hat","l_brow", "l_ear", "l_eye", "l_lip", "neck", "neck_l", "nose", "r_brow", "r_eye", "skin", "u_lip"]
+        # Start building real characteristics
+        for i in img_range:
+            words_in_line = annotations[i+1].split(" ")
+            filename_img = words_in_line[0]
+            
+            # Turn labels from -1 and 1 strings into 0 and 1 ints and then add to list
+            label = [(int(w) + 1) // 2 for w in words_in_line[1:] if w] 
+            self.labels.append(torch.Tensor(label)[selected_attr])
+
+            # Get filename and add it to list  
+            # It is extremely slow to just add the image here, better to let dataloader parallelize          
+            img = os.path.join(filename, f"{filename}/CelebA-HQ-img/{filename_img}")
+            self.features.append(img)
+
+            # If you want landmarks, here they are
+        
+        for j in img_range:
+            seg = []
+            for attr in seg_attr:
+                i = j - 1
+                app = f"{filename}/CelebAMask-HQ-mask-anno/{i//2000}/{(5-len(str(i)))*'0'+str(i)+'_'+parts[attr]}.png"
+                seg.append(app)
+            self.segments.append(seg)
+
+
+
+        
+
+    def __getitem__(self, index):
+        filename = self.features[index]
+        labels = self.labels[index]
+        img = self.transform(Image.open(filename))
+        seg = torch.zeros_like(img)
+        for inc, file in enumerate(self.segments[index]):
+            
+            if os.path.isfile(file): 
+                # print(self.seg_transforms(Image.open(file)).max())
+                # exit()
+                
+                seg = torch.where(seg==0, seg + self.seg_transforms(Image.open(file)).round(), seg)
+        return img, labels, seg[0]
+        
+
+    def __len__(self):
+        return len(self.labels)
     
 '''
 Get train, test, and val loaders
